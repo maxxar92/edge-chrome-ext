@@ -1,0 +1,1 @@
+A chrome extension to show which host delivers an image. To use, load as "unpacked extension" in chrome.

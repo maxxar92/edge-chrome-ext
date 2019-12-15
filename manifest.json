@@ -1,0 +1,24 @@
+{
+  "manifest_version": 2,
+
+  "name": "EDGE images",
+  "description": "This extension shows which EDGE host delivered an image.",
+  "version": "1.0",
+
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "scripts": ["getHeaders.js"],
+    "persistent": true
+  },
+  "content_scripts": [{
+    "js": ["jquery-3.4.1.min.js", "content.js"],
+    "matches": ["<all_urls>"],
+    "run_at": "document_start"
+  }],
+  "permissions": [
+    "<all_urls>","webRequest","webRequestBlocking","activeTab"
+  ]
+}
