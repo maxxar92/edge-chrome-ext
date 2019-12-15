@@ -1,18 +1,3 @@
-
-function get_device(details) {
-	var responseHeaders = details.responseHeaders;
-	if (responseHeaders) {
-		for (var i = 0; i < responseHeaders.length; i++) {
-	      var responseHeader = responseHeaders[i];
-	      if (responseHeader.name === "edge-device") {
-	      	return responseHeader.value;
-	      }
-    	}
-    } 
-
-    return null;
-}
-
 function in_srcset(element, srcUri) {
 	if ($(element).attr('srcset') !== undefined) {
 		return $(element).attr('srcset').split(',').some(urlsub=>
@@ -31,21 +16,16 @@ function wrap(req) {
 			var device = req.device_id;
 			var name = req.host_info["host_name"];
 			var location = req.host_info["location"];
-			if (device != null) {
-				// var selected = $(element).parent().prop('nodeName') === "A" ? $(element).parent() : element;
-				var hosttext = '<div class="text-block"><p>' + name + " (" + location + ")</p> </div>";
-  				var tags = $(element).parents().map(function() { return this.tagName; }).get();
-				console.log(tags);
-				if (tags.some(el=>el==="A")) {
-					$(element).after(hosttext);
-				} else {
-					$(element).wrap('<div class="host-img-container"></div>').after(hosttext);
-				}
+			var hosttext = '<div class="text-block"><p>' + name + " (" + location + ")</p> </div>";
+			var tags = $(element).parents().map(function() { return this.tagName; }).get();
+			if (tags.some(el=>el==="A")) { // don't wrap if parent is a link, as this would hide the image somehow
+				$(element).after(hosttext);
+			} else {
+				$(element).wrap('<div class="host-img-container"></div>').after(hosttext);
 			}
 			handled=true;
 		}
 	});
-	console.log(handled);
 
 	return handled;
 }
@@ -53,16 +33,13 @@ function wrap(req) {
 
 var unhandled = [];
 chrome.runtime.onMessage.addListener( (message, sender, sendResponse) => { 
-	//var details = JSON.parse(localStorage.getItem(message.requesturl));
 	if (message.device_id !== null && message.requesturl !== undefined) {
 		console.log(message.requesturl);
-		// setTimeout(function() {
 			var handled = wrap(message);
 
 			if (!handled) {
 				unhandled.push(message)
 			}
-		// }, 100); // add 100 ms delay to increase chance of img being rendered
 
 		sendResponse(true);
 	}
